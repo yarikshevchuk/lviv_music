@@ -3,16 +3,12 @@
 #include <iostream>
 #include <map>
 
+#include "playlist.h"
 #include "server.h"
 #include "song.h"
 using namespace std;
 
-AuthProfile::AuthProfile(string username, string password, int age)
-    : Profile(true),
-      username(username),
-      password(password),
-      age(age),
-      primaryGenre("none") {}
+AuthProfile::AuthProfile(string username, string password, int age) : Profile(true), username(username), password(password), age(age), primaryGenre("none") {}
 
 string AuthProfile::updatePrimaryGenre() {
     map<string, int> genres;
@@ -90,3 +86,13 @@ void AuthProfile::likeSong(Server& server, int songId) {
     updatePrimaryGenre();
     setRecs(server.getAllSongs());
 }
+
+void AuthProfile::addPlaylist(Playlist* playlist) { playlists.push_back(playlist); };
+void AuthProfile::removePlaylist(Playlist* playlist) {
+    for (int i = 0; i < playlists.size(); i++) {
+        if (playlist->getId() == playlists[i]->getId()) {
+            delete playlists[i];
+            playlists.erase(playlists.begin() + i);
+        }
+    }
+};

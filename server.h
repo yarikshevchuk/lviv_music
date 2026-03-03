@@ -6,6 +6,7 @@ class Profile;
 class Song;
 
 class Server {
+   private:
     std::vector<Song*> trendingSongs;
     std::vector<Song*> allSongs;
     std::vector<Profile*> users;
