@@ -1,4 +1,5 @@
 #pragma once
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -6,19 +7,19 @@ class Song;
 
 class Server {
    private:
-    std::vector<Song*> trendingSongs;
-    std::vector<Song*> allSongs;
+    std::vector<std::shared_ptr<Song>> trendingSongs;
+    std::vector<std::shared_ptr<Song>> allSongs;
 
    public:
-    ~Server();
+    ~Server() = default;
 
-    std::vector<Song*> getTrendingSongs();
-    std::vector<Song*> getAllSongs();
+    std::vector<std::shared_ptr<Song>> getTrendingSongs();
+    std::vector<std::shared_ptr<Song>> getAllSongs();
 
-    void setTrendingSongs(std::vector<Song*> sngs);
-    void addTrendingSong(Song* sng);
-    void addSong(Song* sng);
+    void setTrendingSongs(std::vector<std::shared_ptr<Song>> sngs);
+    void addTrendingSong(std::shared_ptr<Song> sng);
+    void addSong(std::shared_ptr<Song> sng);
 
-    Song* findSong(std::string songName);
-    Song* findSong(int songId);
+    std::shared_ptr<Song> findSong(const std::string& songName);
+    std::shared_ptr<Song> findSong(int songId);
 };

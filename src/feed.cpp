@@ -3,6 +3,7 @@
 #include <cmath>
 #include <iomanip>
 #include <iostream>
+#include <memory>
 #include <string>
 
 #include "../include/User.h"
@@ -15,8 +16,9 @@
 #include "../include/song.h"
 using namespace std;
 
-void Feed ::printSongs(vector<Song*>& songs) {
-    for (Song* sng : songs) {
+void Feed ::printSongs(vector<shared_ptr<Song>>& songs) {
+    for (const auto& sng : songs) {
+        if (!sng) continue;
         string wrapp = "||";
         int width = static_cast<int>(max(sng->getName().size(), sng->getAuthor().size() + 8U) + 1U);
         for (int i = 0; i < width; i++) {
@@ -42,7 +44,7 @@ void Feed::displayTitle(Server&, User* user) {
 };
 
 void Feed::displayTrends(Server& server, User*) {
-    vector<Song*> trends = server.getTrendingSongs();
+    vector<shared_ptr<Song>> trends = server.getTrendingSongs();
 
     cout << "||Trending songs:||\n";
     printSongs(trends);
@@ -55,7 +57,7 @@ void Feed::displayRecs(Server&, User* user) {
         return;
     }
 
-    vector<Song*> recs = user->recs()->getRecs();
+    vector<shared_ptr<Song>> recs = user->recs()->getRecs();
 
     cout << "||Your recomendations:||\n";
     printSongs(recs);
@@ -68,7 +70,7 @@ void Feed::displayLiked(Server&, User* user) {
         return;
     }
 
-    vector<Song*> liked = user->likes()->getLikedSongs();
+    vector<shared_ptr<Song>> liked = user->likes()->getLikedSongs();
 
     cout << "||Liked Songs:||\n";
     printSongs(liked);
@@ -80,7 +82,7 @@ void Feed::displayPlaylists(Server&, User* user) {
         return;
     }
 
-    vector<Playlist*> playlists = user->playlists()->getPlaylists();
+    vector<shared_ptr<Playlist>> playlists = user->playlists()->getPlaylists();
 
     cout << "||Playlists:||\n";
 
@@ -90,7 +92,7 @@ void Feed::displayPlaylists(Server&, User* user) {
     }
 
     for (int i = 0; i < playlists.size(); i++) {
-        vector<Song*> songs = playlists[i]->getSongs();
+        vector<shared_ptr<Song>> songs = playlists[i]->getSongs();
 
         cout << "" << playlists[i]->getName() << "\n";
 

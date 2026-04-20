@@ -1,5 +1,6 @@
 #include <memory>
 #include <string>
+#include <set>
 
 #include "../include/ListenerHasPlaylists.h"
 #include "../include/ListenerHasRecs.h"
@@ -16,15 +17,15 @@ int main() {
     Feed feed;
     Server server;
 
-    Song* s1 = new Song("You're my heart, you're my soul", "Modern Talking ", {"Eurodisco"});
-    Song* s2 = new Song("Cheri Cheri Lady", "Modern Talking", {"Eurodisco"});
-    Song* s3 = new Song("Self Control", "Laura Branigan", {"Eurodisco"});
-    Song* s4 = new Song("The Diary of Jane", "Breaking Benjamin ", {"Rock", "Nu-Metal"});
-    Song* s5 = new Song("In the end", "Linkin Park", {"Rock", "Nu-Metal"});
-    Song* s6 = new Song("Somewhere I Belong", "Linkin Park", {"Rock", "Nu-Metal"});
+    auto s1 = std::make_shared<Song>("You're my heart, you're my soul", "Modern Talking ", std::set<std::string>{"Eurodisco"});
+    auto s2 = std::make_shared<Song>("Cheri Cheri Lady", "Modern Talking", std::set<std::string>{"Eurodisco"});
+    auto s3 = std::make_shared<Song>("Self Control", "Laura Branigan", std::set<std::string>{"Eurodisco"});
+    auto s4 = std::make_shared<Song>("The Diary of Jane", "Breaking Benjamin ", std::set<std::string>{"Rock", "Nu-Metal"});
+    auto s5 = std::make_shared<Song>("In the end", "Linkin Park", std::set<std::string>{"Rock", "Nu-Metal"});
+    auto s6 = std::make_shared<Song>("Somewhere I Belong", "Linkin Park", std::set<std::string>{"Rock", "Nu-Metal"});
 
-    Song* t1 = new Song("Can You Feel My Heart", "BMTH", {"Rock", "Nu-Metal"});
-    Song* t2 = new Song("Before I Forget", "Slipknot", {"Nu-Metal"});
+    auto t1 = std::make_shared<Song>("Can You Feel My Heart", "BMTH", std::set<std::string>{"Rock", "Nu-Metal"});
+    auto t2 = std::make_shared<Song>("Before I Forget", "Slipknot", std::set<std::string>{"Nu-Metal"});
 
     server.addSong(s1);
     server.addSong(s2);
@@ -55,8 +56,8 @@ int main() {
         user_likes->likeSong(server, 5);  // "Somewhere I Belong" id
     }
 
-    Playlist* p1 = new Playlist("My first playlist", "My collection of good songs.");
-    Playlist* p2 = new Playlist("My second playlist", "Songs for a hard workout.");
+    auto p1 = std::make_shared<Playlist>("My first playlist", "My collection of good songs.");
+    auto p2 = std::make_shared<Playlist>("My second playlist", "Songs for a hard workout.");
 
     if (auto* user_playlists = user2.playlists()) {
         user_playlists->addPlaylist(p1);

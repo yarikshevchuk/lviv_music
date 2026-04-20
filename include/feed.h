@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include <vector>
 
 class Song;
@@ -8,7 +9,7 @@ class User;
 
 class Feed {
    private:
-    void printSongs(std::vector<Song*>& songs);
+    void printSongs(std::vector<std::shared_ptr<Song>>& songs);
 
    public:
     void displayTitle(Server& server, User* user);

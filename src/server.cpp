@@ -1,20 +1,17 @@
 #include "../include/server.h"
 
+#include <memory>
+
 #include "../include/song.h"
 
 using namespace std;
 
-Server::~Server() {
-    for (int i = 0; i < allSongs.size(); i++) {
-        delete allSongs[i];
-    }
-};
+vector<shared_ptr<Song>> Server::getTrendingSongs() { return trendingSongs; }
+vector<shared_ptr<Song>> Server::getAllSongs() { return allSongs; }
+void Server::setTrendingSongs(vector<shared_ptr<Song>> sngs) { trendingSongs = std::move(sngs); }
 
-vector<Song*> Server::getTrendingSongs() { return trendingSongs; }
-vector<Song*> Server::getAllSongs() { return allSongs; }
-void Server::setTrendingSongs(vector<Song*> sngs) { trendingSongs = sngs; }
-
-void Server::addTrendingSong(Song* sng) {
+void Server::addTrendingSong(shared_ptr<Song> sng) {
+    if (!sng) return;
     for (auto ptr = trendingSongs.begin(); ptr != trendingSongs.end(); ptr++) {
         if ((*ptr)->getName() == sng->getName()) {
             return;
@@ -24,8 +21,9 @@ void Server::addTrendingSong(Song* sng) {
     addSong(sng);
 }
 
-void Server::addSong(Song* sng) {
-    for (Song* s : allSongs) {
+void Server::addSong(shared_ptr<Song> sng) {
+    if (!sng) return;
+    for (const auto& s : allSongs) {
         if (s->getName() == sng->getName()) {
             return;
         }
@@ -33,20 +31,16 @@ void Server::addSong(Song* sng) {
     allSongs.push_back(sng);
 }
 
-Song* Server::findSong(string songName) {
-    for (Song* s : allSongs) {
-        if (s->getName() == songName) {
-            return s;
-        }
+shared_ptr<Song> Server::findSong(const string& songName) {
+    for (const auto& s : allSongs) {
+        if (s->getName() == songName) return s;
     }
-    return nullptr;
+    return {};
 }
 
-Song* Server::findSong(int songId) {
-    for (Song* s : allSongs) {
-        if (s->getId() == songId) {
-            return s;
-        }
+shared_ptr<Song> Server::findSong(int songId) {
+    for (const auto& s : allSongs) {
+        if (s->getId() == songId) return s;
     }
-    return nullptr;
+    return {};
 }

@@ -6,6 +6,6 @@ class Song;
 
 class ArtistPublisher : public IPublishesSongs {
    public:
-    void publishSong(Server& server, Song* song) override;
+    void publishSong(Server& server, std::shared_ptr<Song> song) override;
 };
 

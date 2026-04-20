@@ -13,14 +13,19 @@ void Playlist::updateTime() {
 
     stats.lastUpdated = asctime(ti);
 }
-void Playlist::updateDuration(Song* sng, int sign) { stats.totalDuration += sign * (sng->getDuration()); }
-
-void Playlist::addSong(Song* sng) {
-    songs.push_back(sng);
-    updateTime();
-    updateDuration(sng, 1);
+void Playlist::updateDuration(const shared_ptr<Song>& sng, int sign) {
+    if (!sng) return;
+    stats.totalDuration += sign * (sng->getDuration());
 }
-void Playlist::deleteSong(Song* sng) {
+
+void Playlist::addSong(shared_ptr<Song> sng) {
+    if (!sng) return;
+    songs.push_back(std::move(sng));
+    updateTime();
+    updateDuration(songs.back(), 1);
+}
+void Playlist::deleteSong(const shared_ptr<Song>& sng) {
+    if (!sng) return;
     for (int i = 0; i < songs.size(); i++) {
         if (songs[i]->getId() == sng->getId()) {
             songs.erase(songs.begin() + i);
@@ -34,7 +39,7 @@ void Playlist::deleteSong(Song* sng) {
 void Playlist::setName(std::string playlistName) { name = playlistName; };
 void Playlist::setDescription(std::string descr) { description = descr; };
 
-vector<Song*> Playlist::getSongs() const { return songs; }
+vector<shared_ptr<Song>> Playlist::getSongs() const { return songs; }
 std::string Playlist::getName() const { return name; };
 std::string Playlist::getDescription() const { return description; };
 int Playlist::getId() const { return playlistId; }

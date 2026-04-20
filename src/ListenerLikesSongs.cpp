@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <map>
+#include <memory>
 
 #include "../include/server.h"
 #include "../include/song.h"
@@ -9,12 +10,12 @@
 using namespace std;
 
 void ListenerLikesSongs::likeSong(Server& server, const string& songName) {
-    Song* likedSong = server.findSong(songName);
-    if (likedSong == nullptr) {
+    auto likedSong = server.findSong(songName);
+    if (!likedSong) {
         return;
     }
 
-    for (Song* sng : likedSongs_) {
+    for (const auto& sng : likedSongs_) {
         if (sng->getName() == likedSong->getName()) {
             return;
         }
@@ -28,12 +29,12 @@ void ListenerLikesSongs::likeSong(Server& server, const string& songName) {
 }
 
 void ListenerLikesSongs::likeSong(Server& server, int songId) {
-    Song* likedSong = server.findSong(songId);
-    if (likedSong == nullptr) {
+    auto likedSong = server.findSong(songId);
+    if (!likedSong) {
         return;
     }
 
-    for (Song* sng : likedSongs_) {
+    for (const auto& sng : likedSongs_) {
         if (sng->getName() == likedSong->getName()) {
             return;
         }
@@ -45,4 +46,4 @@ void ListenerLikesSongs::likeSong(Server& server, int songId) {
     // updatePrimaryGenre();
     // setRecs(server.getAllSongs());
 }
-vector<Song*> ListenerLikesSongs::getLikedSongs() { return likedSongs_; };
+vector<shared_ptr<Song>> ListenerLikesSongs::getLikedSongs() { return likedSongs_; };

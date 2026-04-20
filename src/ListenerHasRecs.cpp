@@ -1,9 +1,10 @@
 #include "../include/ListenerHasRecs.h"
 
+#include <memory>
 #include <vector>
 using namespace std;
 
-void ListenerHasRecs::setRecs(vector<Song*> recs) {
+void ListenerHasRecs::setRecs(vector<shared_ptr<Song>> recs) {
     // this logic needs to be transferred to a separate logic class that manages recomendations
 
     // if (likedSongs.size() == 0) return;
@@ -18,6 +19,6 @@ void ListenerHasRecs::setRecs(vector<Song*> recs) {
     // }
 
     // end of the block responsible for recs logic
-    recs_ = recs;
+    recs_ = std::move(recs);
 }
-vector<Song*> ListenerHasRecs::getRecs() { return recs_; };
+vector<shared_ptr<Song>> ListenerHasRecs::getRecs() { return recs_; };

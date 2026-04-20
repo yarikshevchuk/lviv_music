@@ -32,6 +32,4 @@ class AuthProfile : public ILikesSongs, public IHasPlaylists, public IIdentity, 
     virtual void setTrends(std::vector<Song*> trending) override;
     virtual std::vector<Song*> getTrends() override;
 
-    std::string getUsername() override;
-    int getAge() override;
 };

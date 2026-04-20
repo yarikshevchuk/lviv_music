@@ -1,17 +1,21 @@
 #include "../include/ListenerHasPlaylists.h"
 
 #include <vector>
+#include <memory>
 
 #include "../include/playlist.h"
 using namespace std;
 
-void ListenerHasPlaylists::addPlaylist(Playlist* playlist) { playlists_.push_back(playlist); };
-void ListenerHasPlaylists::removePlaylist(Playlist* playlist) {
+void ListenerHasPlaylists::addPlaylist(shared_ptr<Playlist> playlist) {
+    if (!playlist) return;
+    playlists_.push_back(std::move(playlist));
+}
+void ListenerHasPlaylists::removePlaylist(int playlistId) {
     for (int i = 0; i < playlists_.size(); i++) {
-        if (playlist->getId() == playlists_[i]->getId()) {
-            delete playlists_[i];
+        if (playlistId == playlists_[i]->getId()) {
             playlists_.erase(playlists_.begin() + i);
+            return;
         }
     }
 };
-vector<Playlist*> ListenerHasPlaylists::getPlaylists() { return playlists_; };
+vector<shared_ptr<Playlist>> ListenerHasPlaylists::getPlaylists() { return playlists_; };
