@@ -1,4 +1,4 @@
-#include "song.h"
+#include "../include/song.h"
 using namespace std;
 
 Song::Song(string name, string author, set<string> genres, int duration) : staticInfo{name, author, duration}, songId(Count++), genres(genres), rating(7) {}

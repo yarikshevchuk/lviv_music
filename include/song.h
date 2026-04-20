@@ -2,7 +2,7 @@
 #include <set>
 #include <string>
 
-#include "IAudio.h"
+#include "../include/interface/IAudio.h"
 
 class Song : public IAudio {
    private:

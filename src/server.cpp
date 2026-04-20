@@ -1,7 +1,6 @@
-#include "server.h"
+#include "../include/server.h"
 
-#include "profile.h"
-#include "song.h"
+#include "../include/song.h"
 
 using namespace std;
 
@@ -9,14 +8,10 @@ Server::~Server() {
     for (int i = 0; i < allSongs.size(); i++) {
         delete allSongs[i];
     }
-    for (int i = 0; i < users.size(); i++) {
-        delete users[i];
-    }
 };
 
 vector<Song*> Server::getTrendingSongs() { return trendingSongs; }
 vector<Song*> Server::getAllSongs() { return allSongs; }
-void Server::addUser(Profile* prfl) { users.push_back(prfl); }
 void Server::setTrendingSongs(vector<Song*> sngs) { trendingSongs = sngs; }
 
 void Server::addTrendingSong(Song* sng) {
