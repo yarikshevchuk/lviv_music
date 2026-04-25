@@ -1,16 +1,13 @@
 #include "../include/ListenerLikesSongs.h"
 
-#include <iostream>
-#include <map>
 #include <memory>
 
-#include "../include/server.h"
 #include "../include/song.h"
 
 using namespace std;
 
-void ListenerLikesSongs::likeSong(Server& server, const string& songName) {
-    auto likedSong = server.findSong(songName);
+void ListenerLikesSongs::likeSong(std::shared_ptr<ISongRepository> songs, const string& songName) {
+    auto likedSong = songs->findSong(songName);
     if (!likedSong) {
         return;
     }
@@ -24,12 +21,10 @@ void ListenerLikesSongs::likeSong(Server& server, const string& songName) {
 
     likedSongs_.push_back(likedSong);
     likedSong->updateRating(1);
-    // updatePrimaryGenre();
-    // setRecs(server.getAllSongs());
 }
 
-void ListenerLikesSongs::likeSong(Server& server, int songId) {
-    auto likedSong = server.findSong(songId);
+void ListenerLikesSongs::likeSong(std::shared_ptr<ISongRepository> songs, int songId) {
+    auto likedSong = songs->findSong(songId);
     if (!likedSong) {
         return;
     }

@@ -1,16 +1,15 @@
 #include "../include/User.h"
 
-#include <iostream>
 #include <utility>
 
 using namespace std;
 
 User::User() {};
 void User::grantListenerAccess(std::unique_ptr<ILikesSongs> likes, std::unique_ptr<IHasPlaylists> playlists, std::unique_ptr<IHasRecs> recs, std::unique_ptr<IIdentity> identity) {
-    likes_ = move(likes);
-    playlists_ = move(playlists);
-    recs_ = move(recs);
-    identity_ = move(identity);
+    likes_ = std::move(likes);
+    playlists_ = std::move(playlists);
+    recs_ = std::move(recs);
+    identity_ = std::move(identity);
 
     isAuthenticated = true;
 }
@@ -24,7 +23,7 @@ void User::logoutToGuest() {
     isAuthenticated = false;
 }
 
-void User::grantArtistAccess(std::unique_ptr<IPublishesSongs> pubilsher) { publisher_ = move(pubilsher); }
+void User::grantArtistAccess(std::unique_ptr<IPublishesSongs> pubilsher) { publisher_ = std::move(pubilsher); }
 
 ILikesSongs* User::likes() { return likes_.get(); }
 IHasPlaylists* User::playlists() { return playlists_.get(); }

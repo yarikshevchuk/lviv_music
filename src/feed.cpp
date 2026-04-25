@@ -1,6 +1,5 @@
 #include "../include/feed.h"
 
-#include <cmath>
 #include <iomanip>
 #include <iostream>
 #include <memory>
@@ -12,8 +11,7 @@
 #include "../include/interface/IIdentity.h"
 #include "../include/interface/ILikesSongs.h"
 #include "../include/playlist.h"
-#include "../include/server.h"
-#include "../include/song.h"
+#include "../include/Song.h"
 using namespace std;
 
 void Feed ::printSongs(vector<shared_ptr<Song>>& songs) {
@@ -34,7 +32,7 @@ void Feed ::printSongs(vector<shared_ptr<Song>>& songs) {
     }
 }
 
-void Feed::displayTitle(Server&, User* user) {
+void Feed::displayTitle(std::shared_ptr<User> user) {
     if (user != nullptr && user->getAuthStatus() && user->identity() != nullptr) {
         cout << "||@" << user->identity()->getUsername() << " feed:||\n";
         return;
@@ -43,17 +41,16 @@ void Feed::displayTitle(Server&, User* user) {
     cout << "||Anonymous user feed:||\n";
 };
 
-void Feed::displayTrends(Server& server, User*) {
-    vector<shared_ptr<Song>> trends = server.getTrendingSongs();
+void Feed::displayTrends(std::shared_ptr<ISongRepository> songs) {
+    vector<shared_ptr<Song>> trends = songs->getTrendingSongs();
 
     cout << "||Trending songs:||\n";
     printSongs(trends);
 
     cout << "\n";
 };
-void Feed::displayRecs(Server&, User* user) {
+void Feed::displayRecs(std::shared_ptr<User> user) {
     if (user == nullptr || !user->getAuthStatus() || user->recs() == nullptr) {
-        cout << "\n";
         return;
     }
 
@@ -64,9 +61,8 @@ void Feed::displayRecs(Server&, User* user) {
 
     cout << "\n";
 };
-void Feed::displayLiked(Server&, User* user) {
+void Feed::displayLiked(std::shared_ptr<User> user) {
     if (user == nullptr || !user->getAuthStatus() || user->likes() == nullptr) {
-        cout << "\n";
         return;
     }
 
@@ -77,7 +73,7 @@ void Feed::displayLiked(Server&, User* user) {
 
     cout << "\n";
 };
-void Feed::displayPlaylists(Server&, User* user) {
+void Feed::displayPlaylists(std::shared_ptr<User> user) {
     if (user == nullptr || !user->getAuthStatus() || user->playlists() == nullptr) {
         return;
     }

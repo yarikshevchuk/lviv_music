@@ -1,6 +1,6 @@
 g++ -std=c++17 ^
+  src/app.cpp ^
   src/main.cpp ^
-  src/server.cpp ^
   src/feed.cpp ^
   src/song.cpp ^
   src/playlist.cpp ^
@@ -10,5 +10,8 @@ g++ -std=c++17 ^
   src/ListenerHasPlaylists.cpp ^
   src/ListenerHasRecs.cpp ^
   src/ArtistPublisher.cpp ^
+  src/LocalAuthService.cpp ^
+  src/ServerSongRepository.cpp ^
+  src/GenreRecommendationService.cpp ^
   -Iinclude -o my_app
 my_app.exe
