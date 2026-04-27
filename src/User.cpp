@@ -1,5 +1,9 @@
 #include "../include/User.h"
 
+#include "../include/playlist.h"
+#include "../include/interface/ISongRepository.h"
+#include "../include/Song.h"
+
 #include <utility>
 
 using namespace std;
@@ -32,3 +36,23 @@ IPublishesSongs* User::publisher() { return publisher_.get(); }
 IIdentity* User::identity() { return identity_.get(); }
 
 bool User::getAuthStatus() { return isAuthenticated; };
+
+void User::listen(shared_ptr<ISongRepository> songs, int songId) {
+    if (!isAuthenticated || !songs) {
+        return;
+    }
+    if (auto s = songs->findSong(songId)) {
+        s->addListen();
+    }
+}
+
+void User::listenPlaylist(shared_ptr<ISongRepository> songs, const shared_ptr<Playlist>& playlist) {
+    if (!isAuthenticated || !songs || !playlist) {
+        return;
+    }
+    for (const auto& s : playlist->getSongs()) {
+        if (s) {
+            s->addListen();
+        }
+    }
+}

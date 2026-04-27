@@ -10,6 +10,9 @@
 #include "interface/ILikesSongs.h"
 #include "interface/IPublishesSongs.h"
 
+class ISongRepository;
+class Playlist;
+
 class User {
    private:
     bool isAuthenticated{false};
@@ -33,6 +36,9 @@ class User {
     IHasRecs* recs();
     IPublishesSongs* publisher();
     IIdentity* identity();
+
+    void listen(std::shared_ptr<ISongRepository> songs, int songId);
+    void listenPlaylist(std::shared_ptr<ISongRepository> songs, const std::shared_ptr<Playlist>& playlist);
 
     void logoutToGuest();
 };

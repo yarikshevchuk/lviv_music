@@ -2,7 +2,7 @@
 #include "../include/interface/ISongRepository.h"
 
 #include <memory>
-#include "../include/song.h"
+#include "../include/Song.h"
 
 void ArtistPublisher::publishSong(std::shared_ptr<ISongRepository> songs, std::shared_ptr<Song> song) {
     if (!song) {

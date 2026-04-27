@@ -5,6 +5,7 @@ class IAuthService{
     public: 
     virtual ~IAuthService() = default;
 
+    virtual bool registerUser(const std::string& username, const std::string& password) = 0;
     virtual bool login(const std::string& username, const std::string& password) = 0;
     virtual void logout() = 0;
 

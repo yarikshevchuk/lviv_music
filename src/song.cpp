@@ -1,7 +1,8 @@
-#include "../include/song.h"
+#include "../include/Song.h"
 using namespace std;
 
-Song::Song(string name, string author, set<string> genres, int duration) : staticInfo{name, author, duration}, songId(Count++), genres(genres), rating(7) {}
+Song::Song(string name, string author, set<string> genres, int duration)
+    : staticInfo{name, author, duration}, songId(Count++), genres(genres), rating(7), listenCount(0) {}
 
 void Song::updateRating(int val) {
     if (val > 0) {
@@ -19,6 +20,10 @@ string Song::getName() const { return staticInfo.name; }
 string Song::getAuthor() const { return staticInfo.author; }
 int Song::getRating() const { return rating; }
 int Song::getDuration() const { return staticInfo.duration; }
+
+void Song::addListen() { ++listenCount; }
+
+int Song::getListenCount() const { return listenCount; }
 
 // lyrics
 

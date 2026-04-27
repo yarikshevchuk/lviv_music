@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(lviv_music LANGUAGES CXX)
+project(lviv_music LANGUAGES C CXX)
 
 if(POLICY CMP0135)
   # FetchContent URL download: use extraction time for out-of-date checks (not archive timestamps)
@@ -18,6 +18,14 @@ FetchContent_Declare(
 
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
+
+FetchContent_Declare(
+  sqlite3_source
+  URL https://sqlite.org/2026/sqlite-amalgamation-3530000.zip
+)
+FetchContent_MakeAvailable(sqlite3_source)
+add_library(sqlite3 STATIC "${sqlite3_source_SOURCE_DIR}/sqlite3.c")
+target_include_directories(sqlite3 PUBLIC "${sqlite3_source_SOURCE_DIR}")
 
 add_executable(lviv_music
     src/main.cpp
@@ -38,9 +46,9 @@ add_executable(lviv_music
 )
 
 enable_testing()
-
 add_executable(lviv_music_tests
   tests/AuthTest.cpp
+  tests/AuthRegisterTest.cpp
   tests/ServerSongRepositoryTest.cpp
   src/LocalAuthService.cpp
   src/ServerSongRepository.cpp
@@ -50,6 +58,11 @@ target_include_directories(lviv_music_tests PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}
 target_link_libraries(
   lviv_music_tests PRIVATE
   GTest::gtest_main
+  sqlite3
+)
+
+target_link_libraries(lviv_music
+  sqlite3
 )
 include(GoogleTest)
 gtest_discover_tests(lviv_music_tests)
