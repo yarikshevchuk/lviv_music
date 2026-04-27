@@ -1,4 +1,4 @@
-#include "../include/playlist.h"
+#include "../include/Playlist.h"
 
 #include <ctime>
 using namespace std;

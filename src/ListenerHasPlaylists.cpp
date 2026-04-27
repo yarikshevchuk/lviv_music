@@ -3,7 +3,7 @@
 #include <vector>
 #include <memory>
 
-#include "../include/playlist.h"
+#include "../include/Playlist.h"
 using namespace std;
 
 void ListenerHasPlaylists::addPlaylist(shared_ptr<Playlist> playlist) {

@@ -1,6 +1,6 @@
 #include "../include/User.h"
 
-#include "../include/playlist.h"
+#include "../include/Playlist.h"
 #include "../include/interface/ISongRepository.h"
 #include "../include/Song.h"
 

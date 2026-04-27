@@ -16,6 +16,7 @@ class Song : public IAudio {
 
     int songId;
     int rating;
+    int listenCount;
     static int Count;
 
     class Lyrics {
@@ -47,4 +48,7 @@ class Song : public IAudio {
     void addLyrics(std::string lyrics, std::string source);
 
     int getRating() const;
+
+    void addListen();
+    int getListenCount() const;
 };

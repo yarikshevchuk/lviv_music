@@ -28,11 +28,11 @@ add_library(sqlite3 STATIC "${sqlite3_source_SOURCE_DIR}/sqlite3.c")
 target_include_directories(sqlite3 PUBLIC "${sqlite3_source_SOURCE_DIR}")
 
 add_executable(lviv_music
-    src/main.cpp
+    src/Main.cpp
     src/App.cpp
-    src/feed.cpp
-    src/song.cpp
-    src/playlist.cpp
+    src/Feed.cpp
+    src/Song.cpp
+    src/Playlist.cpp
     src/User.cpp
     src/ListenerIdentity.cpp
     src/ListenerLikesSongs.cpp

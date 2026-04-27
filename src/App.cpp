@@ -1,31 +1,31 @@
-#include <memory>
-#include <string>
-#include <iostream>
-#include <set>
-
 #include "../include/app.h"
-#include "../include/interface/ISongRepository.h"
-#include "../include/interface/IAuthService.h"
-#include "../include/interface/IRecommendationService.h"
+
+#include <iostream>
+#include <memory>
+#include <set>
+#include <string>
+
+
 #include "../include/ListenerHasPlaylists.h"
 #include "../include/ListenerHasRecs.h"
 #include "../include/ListenerHasTrends.h"
 #include "../include/ListenerIdentity.h"
 #include "../include/ListenerLikesSongs.h"
-#include "../include/User.h"
-#include "../include/feed.h"
-#include "../include/playlist.h"
 #include "../include/Song.h"
+#include "../include/User.h"
+#include "../include/Feed.h"
+#include "../include/interface/IAuthService.h"
+#include "../include/interface/IRecommendationService.h"
+#include "../include/interface/ISongRepository.h"
+#include "../include/playlist.h"
 
-App::App(Feed& feed, std::shared_ptr<IAuthService> auth, std::shared_ptr<ISongRepository> songs, std::shared_ptr<IRecommendationService> recs)
-    : feed_(feed), auth_(std::move(auth)), songs_(std::move(songs)),  recs_(std::move(recs)) {}
+App::App(Feed& feed, std::shared_ptr<IAuthService> auth, std::shared_ptr<ISongRepository> songs, std::shared_ptr<IRecommendationService> recs) : feed_(feed), auth_(std::move(auth)), songs_(std::move(songs)), recs_(std::move(recs)) {}
 
 int App::run() {
-    
     if (auth_) {
-        std::cout << "auth ok? "  << (auth_->login("user1", "user1") ? "true" : "false")  << "\n";
+        std::cout << "auth ok? " << (auth_->login("user1", "user1") ? "true" : "false") << "\n";
         std::cout << "auth ok? " << (auth_->login("user1", "wrong") ? "true" : "false") << "\n";
-      }
+    }
 
     auto s1 = std::make_shared<Song>("You're my heart, you're my soul", "Modern Talking ", std::set<std::string>{"Eurodisco"});
     auto s2 = std::make_shared<Song>("Cheri Cheri Lady", "Modern Talking", std::set<std::string>{"Eurodisco"});
@@ -49,7 +49,6 @@ int App::run() {
 
     std::shared_ptr<User> user1 = std::make_shared<User>();
     std::shared_ptr<User> user2 = std::make_shared<User>();
-
 
     user2->grantListenerAccess(std::make_unique<ListenerLikesSongs>(), std::make_unique<ListenerHasPlaylists>(), std::make_unique<ListenerHasRecs>(), std::make_unique<ListenerIdentity>("user1", "user1@gmail.com", 1, 18));
 
@@ -88,7 +87,7 @@ int App::run() {
 
     std::vector<std::shared_ptr<Song>> recs2 = recs_->generateRecommendations(songs_, user2);
 
-    if(auto* user_recs =  user2->recs()) {
+    if (auto* user_recs = user2->recs()) {
         user2->recs()->setRecs(recs2);
     }
 

@@ -1,4 +1,4 @@
-#include "../include/feed.h"
+#include "../include/Feed.h"
 
 #include <iomanip>
 #include <iostream>

@@ -3,6 +3,7 @@
 #include <memory>
 #include <set>
 #include <vector>
+#include <string>
 
 #include "ServerSongRepository.h"
 #include "Song.h"

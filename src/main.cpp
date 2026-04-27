@@ -1,7 +1,7 @@
 
 #include "../include/boost/di.hpp"
 #include "../include/App.h"
-#include "../include/feed.h"
+#include "../include/Feed.h"
 #include "../include/LocalAuthService.h"
 #include "../include/interface/IAuthService.h"
 #include "../include/interface/ISongRepository.h"
