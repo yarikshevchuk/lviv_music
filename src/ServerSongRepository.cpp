@@ -7,11 +7,6 @@ using namespace std;
 
 void ServerSongRepository::addSong(std::shared_ptr<Song> sng) {
     if (!sng) return;
-    for (const auto& s : songs_) {
-        if (s->getName() == sng->getName()) {
-            return;
-        }
-    }
     songs_.push_back(sng);
 }
 

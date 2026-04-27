@@ -1,4 +1,5 @@
 test
+build/
 *.exe
 .vscode
 old_logic_bin

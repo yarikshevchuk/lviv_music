@@ -1,14 +1,13 @@
 #include "../include/ArtistPublisher.h"
-
+#include "../include/interface/ISongRepository.h"
 
 #include <memory>
-#include "../include/server.h"
 #include "../include/song.h"
 
-void ArtistPublisher::publishSong(Server& server, std::shared_ptr<Song> song) {
+void ArtistPublisher::publishSong(std::shared_ptr<ISongRepository> songs, std::shared_ptr<Song> song) {
     if (!song) {
         return;
     }
-    server.addSong(song);
+    songs->addSong(song);
 }
 
