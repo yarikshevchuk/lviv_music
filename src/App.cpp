@@ -3,99 +3,174 @@
 #include <iostream>
 #include <memory>
 #include <set>
+#include <sstream>
 #include <string>
+#include <vector>
 
-
-#include "../include/ListenerHasPlaylists.h"
-#include "../include/ListenerHasRecs.h"
-#include "../include/ListenerHasTrends.h"
-#include "../include/ListenerIdentity.h"
-#include "../include/ListenerLikesSongs.h"
 #include "../include/Song.h"
-#include "../include/User.h"
-#include "../include/Feed.h"
 #include "../include/interface/IAuthService.h"
-#include "../include/interface/IRecommendationService.h"
-#include "../include/interface/ISongRepository.h"
-#include "../include/playlist.h"
 
-App::App(Feed& feed, std::shared_ptr<IAuthService> auth, std::shared_ptr<ISongRepository> songs, std::shared_ptr<IRecommendationService> recs) : feed_(feed), auth_(std::move(auth)), songs_(std::move(songs)), recs_(std::move(recs)) {}
+App::App(std::shared_ptr<IAuthService> auth, std::shared_ptr<ISongRepository> songs, std::shared_ptr<IRecommendationService> recs) : auth_(std::move(auth)), songs_(std::move(songs)), recs_(std::move(recs)) {}
 
 int App::run() {
-    if (auth_) {
-        std::cout << "auth ok? " << (auth_->login("user1", "user1") ? "true" : "false") << "\n";
-        std::cout << "auth ok? " << (auth_->login("user1", "wrong") ? "true" : "false") << "\n";
+    if (songs_ == nullptr) {
+        std::cout << "Song repository is not configured.\n";
+        return 1;
     }
 
-    auto s1 = std::make_shared<Song>("You're my heart, you're my soul", "Modern Talking ", std::set<std::string>{"Eurodisco"});
-    auto s2 = std::make_shared<Song>("Cheri Cheri Lady", "Modern Talking", std::set<std::string>{"Eurodisco"});
-    auto s3 = std::make_shared<Song>("Self Control", "Laura Branigan", std::set<std::string>{"Eurodisco"});
-    auto s4 = std::make_shared<Song>("The Diary of Jane", "Breaking Benjamin ", std::set<std::string>{"Rock", "Nu-Metal"});
-    auto s5 = std::make_shared<Song>("In the end", "Linkin Park", std::set<std::string>{"Rock", "Nu-Metal"});
-    auto s6 = std::make_shared<Song>("Somewhere I Belong", "Linkin Park", std::set<std::string>{"Rock", "Nu-Metal"});
+    // Songs are created manually for now, but stored inside the injected repository.
+    songs_->addSong(std::make_shared<Song>("You're my heart, you're my soul", "Modern Talking", std::set<std::string>{"Eurodisco"}));
+    songs_->addSong(std::make_shared<Song>("Cheri Cheri Lady", "Modern Talking", std::set<std::string>{"Eurodisco"}));
+    songs_->addSong(std::make_shared<Song>("Self Control", "Laura Branigan", std::set<std::string>{"Eurodisco"}));
+    songs_->addSong(std::make_shared<Song>("The Diary of Jane", "Breaking Benjamin", std::set<std::string>{"Rock", "Nu-Metal"}));
+    songs_->addTrendingSong(std::make_shared<Song>("Can You Feel My Heart", "BMTH", std::set<std::string>{"Rock", "Nu-Metal"}));
+    songs_->addTrendingSong(std::make_shared<Song>("Before I Forget", "Slipknot", std::set<std::string>{"Nu-Metal"}));
 
-    auto t1 = std::make_shared<Song>("Can You Feel My Heart", "BMTH", std::set<std::string>{"Rock", "Nu-Metal"});
-    auto t2 = std::make_shared<Song>("Before I Forget", "Slipknot", std::set<std::string>{"Nu-Metal"});
+    // Likes are kept in-memory (simplest possible UI for now).
+    std::set<int> likedSongIds;
 
-    songs_->addSong(s1);
-    songs_->addSong(s2);
-    songs_->addSong(s3);
-    songs_->addSong(s4);
-    songs_->addSong(s5);
-    songs_->addSong(s6);
+    auto readLine = []() -> std::string {
+        std::string s;
+        std::getline(std::cin, s);
+        return s;
+    };
 
-    songs_->addTrendingSong(t1);
-    songs_->addTrendingSong(t2);
+    auto readInt = [&](int minVal, int maxVal) -> int {
+        while (true) {
+            std::string s = readLine();
+            std::stringstream ss(s);
+            int v = 0;
+            if ((ss >> v) && !(ss >> s) && v >= minVal && v <= maxVal) {
+                return v;
+            }
+            std::cout << "Enter a number [" << minVal << ".." << maxVal << "]: ";
+        }
+    };
 
-    std::shared_ptr<User> user1 = std::make_shared<User>();
-    std::shared_ptr<User> user2 = std::make_shared<User>();
+    auto getLikedSongs = [&]() -> std::vector<std::shared_ptr<Song>> {
+        std::vector<std::shared_ptr<Song>> out;
+        for (const auto& s : songs_->getSongs()) {
+            if (likedSongIds.count(s->getId()) != 0) {
+                out.push_back(s);
+            }
+        }
+        return out;
+    };
 
-    user2->grantListenerAccess(std::make_unique<ListenerLikesSongs>(), std::make_unique<ListenerHasPlaylists>(), std::make_unique<ListenerHasRecs>(), std::make_unique<ListenerIdentity>("user1", "user1@gmail.com", 1, 18));
+    auto showSong = [&](const std::vector<std::shared_ptr<Song>>& list, size_t startIndex) {
+        if (list.empty()) {
+            return;
+        }
 
-    if (auto* user_likes = user1->likes()) {
-        user_likes->likeSong(songs_, "Cheri Cheri Lady");
+        size_t idx = startIndex;
+        while (true) {
+            const auto& s = list[idx];
+            const bool isLiked = likedSongIds.count(s->getId()) != 0;
+
+            std::cout << "\n=== Song ===\n";
+            std::cout << "Name:   " << s->getName() << "\n";
+            std::cout << "Author: " << s->getAuthor() << "\n";
+            std::cout << "Rating: " << s->getRating() << "\n";
+            std::cout << "Liked:  " << (isLiked ? "yes" : "no") << "\n";
+            std::cout << "\n";
+            std::cout << "[1] Like/Unlike\n";
+            std::cout << "[2] Play next song\n";
+            std::cout << "[0] Back to main menu\n";
+            std::cout << "Choose: ";
+
+            const int action = readInt(0, 2);
+            if (action == 0) {
+                return;
+            }
+            if (action == 1) {
+                if (isLiked) {
+                    likedSongIds.erase(s->getId());
+                } else {
+                    likedSongIds.insert(s->getId());
+                }
+                continue;
+            }
+            if (action == 2) {
+                idx = (idx + 1) % list.size();
+                continue;
+            }
+        }
+    };
+
+    auto showSongList = [&](const std::string& title, const std::vector<std::shared_ptr<Song>>& list) {
+        std::cout << "\n=== " << title << " ===\n";
+        if (list.empty()) {
+            std::cout << "(empty)\n";
+            return;
+        }
+
+        for (size_t i = 0; i < list.size(); ++i) {
+            std::cout << (i + 1) << ") " << list[i]->getName() << " - " << list[i]->getAuthor() << "\n";
+        }
+        std::cout << "0) Back\n";
+        std::cout << "Choose song number: ";
+        const int choice = readInt(0, static_cast<int>(list.size()));
+        if (choice == 0) {
+            return;
+        }
+        showSong(list, static_cast<size_t>(choice - 1));
+    };
+
+    // === AUTH menu ===
+    if (auth_ == nullptr) {
+        std::cout << "Auth service is not configured.\n";
+        return 1;
     }
-    if (auto* user_likes = user2->likes()) {
-        user_likes->likeSong(songs_, "Cheri Cheri Lady");
+
+    while (!auth_->isAuthenticated()) {
+        std::cout << "\n=== Auth ===\n";
+        std::cout << "[1] Login\n";
+        std::cout << "[2] Register\n";
+        std::cout << "[0] Exit\n";
+        std::cout << "Choose: ";
+        const int choice = readInt(0, 2);
+        if (choice == 0) {
+            return 0;
+        }
+
+        std::cout << "Username: ";
+        const std::string username = readLine();
+        std::cout << "Password: ";
+        const std::string password = readLine();
+
+        if (choice == 1) {
+            if (!auth_->login(username, password)) {
+                std::cout << "Login failed.\n";
+            }
+        } else if (choice == 2) {
+            if (!auth_->registerUser(username, password)) {
+                std::cout << "Register failed.\n";
+            } else {
+                std::cout << "Registered.\n";
+            }
+        }
     }
 
-    if (auto* user_likes = user2->likes()) {
-        user_likes->likeSong(songs_, "In the end");
+    // === HOME menu ===
+    while (true) {
+        std::cout << "\n=== Home (" << auth_->getUsername() << ") ===\n";
+        std::cout << "[1] Trends\n";
+        std::cout << "[2] All songs\n";
+        std::cout << "[3] Liked songs\n";
+        std::cout << "[0] Logout & Exit\n";
+        std::cout << "Choose: ";
+
+        const int choice = readInt(0, 3);
+        if (choice == 0) {
+            auth_->logout();
+            return 0;
+        }
+        if (choice == 1) {
+            showSongList("Trends", songs_->getTrendingSongs());
+        } else if (choice == 2) {
+            showSongList("All songs", songs_->getSongs());
+        } else if (choice == 3) {
+            showSongList("Liked songs", getLikedSongs());
+        }
     }
-    if (auto* user_likes = user2->likes()) {
-        user_likes->likeSong(songs_, 5);  // "Somewhere I Belong" id
-    }
-
-    auto p1 = std::make_shared<Playlist>("My first playlist", "My collection of good songs.");
-    auto p2 = std::make_shared<Playlist>("My second playlist", "Songs for a hard workout.");
-
-    if (auto* user_playlists = user2->playlists()) {
-        user_playlists->addPlaylist(p1);
-        user_playlists->addPlaylist(p2);
-    }
-
-    p1->addSong(s1);
-    p1->addSong(s2);
-    p1->addSong(s3);
-
-    p2->addSong(s4);
-    p2->addSong(s6);
-
-    feed_.displayTitle(user1);
-    feed_.displayTrends(songs_);
-    feed_.displayPlaylists(user1);
-
-    std::vector<std::shared_ptr<Song>> recs2 = recs_->generateRecommendations(songs_, user2);
-
-    if (auto* user_recs = user2->recs()) {
-        user2->recs()->setRecs(recs2);
-    }
-
-    feed_.displayTitle(user2);
-    feed_.displayRecs(user2);
-    feed_.displayLiked(user2);
-    feed_.displayPlaylists(user2);
-    feed_.displayTrends(songs_);
-
-    return 0;
 }

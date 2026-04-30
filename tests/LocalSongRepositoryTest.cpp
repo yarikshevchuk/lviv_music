@@ -5,13 +5,13 @@
 #include <vector>
 #include <string>
 
-#include "ServerSongRepository.h"
+#include "LocalSongRepository.h"
 #include "Song.h"
 
 using namespace std;
 
-TEST(ServerSongRepository, AddAndFindSong) {
-    ServerSongRepository repo;
+TEST(LocalSongRepository, AddAndFindSong) {
+    LocalSongRepository repo;
     shared_ptr<Song> sng1 = make_shared<Song>("Song1", "Author1", set<string>{"HipHop"});
 
     repo.addSong(sng1);
@@ -20,8 +20,8 @@ TEST(ServerSongRepository, AddAndFindSong) {
     EXPECT_EQ(found, sng1);
 }
 
-TEST(ServerSongRepository, AddTwoSongsAndCheck) {
-    ServerSongRepository repo;
+TEST(LocalSongRepository, AddTwoSongsAndCheck) {
+    LocalSongRepository repo;
     shared_ptr<Song> sng1 = make_shared<Song>("Song", "Author1", set<string>{"HipHop"});
     shared_ptr<Song> sng2 = make_shared<Song>("Song", "Author2", set<string>{"Metal"});
 
@@ -35,8 +35,8 @@ TEST(ServerSongRepository, AddTwoSongsAndCheck) {
     EXPECT_EQ(songs[0]->getName(), sng1->getName());
 }
 
-TEST(ServerSongRepository, AddTrendingSong) {
-    ServerSongRepository repo;
+TEST(LocalSongRepository, AddTrendingSong) {
+    LocalSongRepository repo;
     shared_ptr<Song> sng1 = make_shared<Song>("Song", "Author1", set<string>{"HipHop"});
 
     repo.addTrendingSong(sng1);

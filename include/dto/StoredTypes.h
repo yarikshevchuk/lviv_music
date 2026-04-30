@@ -23,12 +23,4 @@ struct SongRow {
     std::set<std::string> genres;
 };
 
-struct PlaylistRow {
-    int id{0};
-    int owner_user_id{0};
-    std::string name;
-    std::string description;
-    int play_count{0};
-};
-
 } 

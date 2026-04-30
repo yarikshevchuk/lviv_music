@@ -10,7 +10,7 @@
 #include "../include/interface/IHasRecs.h"
 #include "../include/interface/IIdentity.h"
 #include "../include/interface/ILikesSongs.h"
-#include "../include/playlist.h"
+#include "../include/Playlist.h"
 #include "../include/Song.h"
 using namespace std;
 
