@@ -5,7 +5,6 @@
 
 #include "../dto/StoredTypes.h"
 
-// Persistence boundary for the song catalog.
 class ISongStore {
    public:
     virtual ~ISongStore() = default;
@@ -14,7 +13,6 @@ class ISongStore {
     virtual bool updateSong(const DTO::SongRow& song) = 0;
     virtual bool deleteSong(int id) = 0;
 
-    // Returns nullptr if not found.
     virtual std::shared_ptr<DTO::SongRow> getSongById(int id) const = 0;
     virtual std::vector<DTO::SongRow> listSongs() const = 0;
 };

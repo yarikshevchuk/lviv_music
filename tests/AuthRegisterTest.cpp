@@ -5,15 +5,9 @@
 
 #include "LocalAuthService.h"
 
-namespace {
-std::string uniqueUsername() {
-    const auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-    return "user_" + std::to_string(ms);
-}
-}  
 
 TEST(LocalAuthService, RegisterInMemory) {
-    const std::string u = uniqueUsername();
+    const std::string u = "kasjdfklj19idjfhasdfkl";
     const std::string p = "secret1";
 
     LocalAuthService a;

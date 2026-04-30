@@ -41,17 +41,23 @@ add_executable(lviv_music
     src/ListenerHasTrends.cpp
     src/ArtistPublisher.cpp
     src/LocalAuthService.cpp
-    src/ServerSongRepository.cpp
+    src/SQLAuthService.cpp
+    src/LocalSongRepository.cpp
     src/GenreRecommendationService.cpp
+    src/dto/SqliteDatabase.cpp
+    src/dto/SqliteUserStore.cpp
+    src/dto/SqliteSongStore.cpp
 )
 
 enable_testing()
 add_executable(lviv_music_tests
   tests/AuthTest.cpp
   tests/AuthRegisterTest.cpp
-  tests/ServerSongRepositoryTest.cpp
+  tests/SQLAuthServiceTest.cpp
+  tests/LocalSongRepositoryTest.cpp
   src/LocalAuthService.cpp
-  src/ServerSongRepository.cpp
+  src/SQLAuthService.cpp
+  src/LocalSongRepository.cpp
   src/Song.cpp
 )
 target_include_directories(lviv_music_tests PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include")
@@ -76,11 +82,11 @@ else()
     target_compile_options(lviv_music PRIVATE -Wall -Wextra -Wpedantic)
 endif()
 
-add_custom_command(
-    TARGET lviv_music
-    POST_BUILD
-    COMMAND "$<TARGET_FILE:lviv_music>"
-    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
-    COMMENT "Run lviv_music"
-    VERBATIM
-)
+# add_custom_command(
+#     TARGET lviv_music
+#     POST_BUILD
+#     COMMAND "$<TARGET_FILE:lviv_music>"
+#     WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+#     COMMENT "Run lviv_music"
+#     VERBATIM
+# )
