@@ -10,7 +10,6 @@ class IUserStore {
     virtual ~IUserStore() = default;
 
     virtual int insertUser(const DTO::UserRow& user) = 0;
-    virtual bool updateUser(const DTO::UserRow& user) = 0;
     virtual bool deleteUser(int id) = 0;
 
     virtual std::shared_ptr<DTO::UserRow> getUserById(int id) const = 0;

@@ -46,7 +46,6 @@ add_executable(lviv_music
     src/GenreRecommendationService.cpp
     src/dto/SqliteDatabase.cpp
     src/dto/SqliteUserStore.cpp
-    src/dto/SqliteSongStore.cpp
 )
 
 enable_testing()
@@ -63,6 +62,11 @@ add_executable(lviv_music_tests
   src/Song.cpp
 )
 target_include_directories(lviv_music_tests PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include")
+
+target_compile_definitions(
+  lviv_music_tests PRIVATE
+  "LVIV_MUSIC_TEST_SCHEMA_SQL_PATH=\"${CMAKE_CURRENT_SOURCE_DIR}/db/schema.sql\""
+)
 target_link_libraries(
   lviv_music_tests PRIVATE
   GTest::gtest_main
@@ -83,12 +87,3 @@ if(MSVC)
 else()
     target_compile_options(lviv_music PRIVATE -Wall -Wextra -Wpedantic)
 endif()
-
-# add_custom_command(
-#     TARGET lviv_music
-#     POST_BUILD
-#     COMMAND "$<TARGET_FILE:lviv_music>"
-#     WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
-#     COMMENT "Run lviv_music"
-#     VERBATIM
-# )

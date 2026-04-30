@@ -7,7 +7,12 @@
 #include <string>
 #include <vector>
 
+#include "../include/ListenerHasPlaylists.h"
+#include "../include/ListenerHasRecs.h"
+#include "../include/ListenerIdentity.h"
+#include "../include/ListenerLikesSongs.h"
 #include "../include/Song.h"
+#include "../include/User.h"
 #include "../include/interface/IAuthService.h"
 
 App::App(std::shared_ptr<IAuthService> auth, std::shared_ptr<ISongRepository> songs, std::shared_ptr<IRecommendationService> recs) : auth_(std::move(auth)), songs_(std::move(songs)), recs_(std::move(recs)) {}
@@ -18,16 +23,12 @@ int App::run() {
         return 1;
     }
 
-    // Songs are created manually for now, but stored inside the injected repository.
     songs_->addSong(std::make_shared<Song>("You're my heart, you're my soul", "Modern Talking", std::set<std::string>{"Eurodisco"}));
     songs_->addSong(std::make_shared<Song>("Cheri Cheri Lady", "Modern Talking", std::set<std::string>{"Eurodisco"}));
     songs_->addSong(std::make_shared<Song>("Self Control", "Laura Branigan", std::set<std::string>{"Eurodisco"}));
     songs_->addSong(std::make_shared<Song>("The Diary of Jane", "Breaking Benjamin", std::set<std::string>{"Rock", "Nu-Metal"}));
     songs_->addTrendingSong(std::make_shared<Song>("Can You Feel My Heart", "BMTH", std::set<std::string>{"Rock", "Nu-Metal"}));
     songs_->addTrendingSong(std::make_shared<Song>("Before I Forget", "Slipknot", std::set<std::string>{"Nu-Metal"}));
-
-    // Likes are kept in-memory (simplest possible UI for now).
-    std::set<int> likedSongIds;
 
     auto readLine = []() -> std::string {
         std::string s;
@@ -48,13 +49,10 @@ int App::run() {
     };
 
     auto getLikedSongs = [&]() -> std::vector<std::shared_ptr<Song>> {
-        std::vector<std::shared_ptr<Song>> out;
-        for (const auto& s : songs_->getSongs()) {
-            if (likedSongIds.count(s->getId()) != 0) {
-                out.push_back(s);
-            }
+        if (currentUser_ == nullptr || currentUser_->likes() == nullptr) {
+            return {};
         }
-        return out;
+        return currentUser_->likes()->getLikedSongs();
     };
 
     auto showSong = [&](const std::vector<std::shared_ptr<Song>>& list, size_t startIndex) {
@@ -65,7 +63,13 @@ int App::run() {
         size_t idx = startIndex;
         while (true) {
             const auto& s = list[idx];
-            const bool isLiked = likedSongIds.count(s->getId()) != 0;
+            bool isLiked = false;
+            for (const auto& liked : getLikedSongs()) {
+                if (liked && liked->getId() == s->getId()) {
+                    isLiked = true;
+                    break;
+                }
+            }
 
             std::cout << "\n=== Song ===\n";
             std::cout << "Name:   " << s->getName() << "\n";
@@ -73,7 +77,7 @@ int App::run() {
             std::cout << "Rating: " << s->getRating() << "\n";
             std::cout << "Liked:  " << (isLiked ? "yes" : "no") << "\n";
             std::cout << "\n";
-            std::cout << "[1] Like/Unlike\n";
+            std::cout << "[1] " << (isLiked ? "Unlike" : "Like") << "\n";
             std::cout << "[2] Play next song\n";
             std::cout << "[0] Back to main menu\n";
             std::cout << "Choose: ";
@@ -83,10 +87,12 @@ int App::run() {
                 return;
             }
             if (action == 1) {
-                if (isLiked) {
-                    likedSongIds.erase(s->getId());
-                } else {
-                    likedSongIds.insert(s->getId());
+                if (currentUser_ != nullptr && currentUser_->likes() != nullptr) {
+                    if (isLiked) {
+                        currentUser_->likes()->unlikeSong(songs_, s->getId());
+                    } else {
+                        currentUser_->likes()->likeSong(songs_, s->getId());
+                    }
                 }
                 continue;
             }
@@ -141,6 +147,9 @@ int App::run() {
         if (choice == 1) {
             if (!auth_->login(username, password)) {
                 std::cout << "Login failed.\n";
+            } else {
+                currentUser_ = std::make_shared<User>();
+                currentUser_->grantListenerAccess(std::make_unique<ListenerLikesSongs>(), std::make_unique<ListenerHasPlaylists>(), std::make_unique<ListenerHasRecs>(), std::make_unique<ListenerIdentity>(auth_->getUsername(), "", 0, 0));
             }
         } else if (choice == 2) {
             if (!auth_->registerUser(username, password)) {
@@ -157,12 +166,14 @@ int App::run() {
         std::cout << "[1] Trends\n";
         std::cout << "[2] All songs\n";
         std::cout << "[3] Liked songs\n";
+        std::cout << "[4] Recommendations\n";
         std::cout << "[0] Logout & Exit\n";
         std::cout << "Choose: ";
 
-        const int choice = readInt(0, 3);
+        const int choice = readInt(0, 4);
         if (choice == 0) {
             auth_->logout();
+            currentUser_.reset();
             return 0;
         }
         if (choice == 1) {
@@ -171,6 +182,13 @@ int App::run() {
             showSongList("All songs", songs_->getSongs());
         } else if (choice == 3) {
             showSongList("Liked songs", getLikedSongs());
+        } else if (choice == 4) {
+            if (recs_ == nullptr || currentUser_ == nullptr || currentUser_->recs() == nullptr) {
+                std::cout << "Recommendations are not configured.\n";
+                continue;
+            }
+            currentUser_->recs()->setRecs(recs_->generateRecommendations(songs_, currentUser_));
+            showSongList("Recommendations", currentUser_->recs()->getRecs());
         }
     }
 }

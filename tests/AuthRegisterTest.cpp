@@ -5,7 +5,6 @@
 
 #include "LocalAuthService.h"
 
-
 TEST(LocalAuthService, RegisterInMemory) {
     const std::string u = "kasjdfklj19idjfhasdfkl";
     const std::string p = "secret1";
@@ -22,5 +21,5 @@ TEST(LocalAuthService, RejectsInvalidCredentials) {
     LocalAuthService a;
     EXPECT_FALSE(a.registerUser("", "x"));
     EXPECT_FALSE(a.registerUser("x", ""));
-    EXPECT_FALSE(a.registerUser("bad name", "pass"));
+    EXPECT_FALSE(a.registerUser("aa aa", "pass"));
 }

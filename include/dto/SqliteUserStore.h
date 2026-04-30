@@ -11,7 +11,6 @@ class SqliteUserStore : public IUserStore {
    public:
     SqliteUserStore(std::shared_ptr<dto::SqliteDatabase> db);
     int insertUser(const DTO::UserRow& user) override;
-    bool updateUser(const DTO::UserRow& user) override;
     bool deleteUser(int id) override;
 
     std::shared_ptr<DTO::UserRow> getUserById(int id) const override;

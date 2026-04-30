@@ -41,29 +41,6 @@ int SqliteUserStore::insertUser(const DTO::UserRow& user) {
     return static_cast<int>(sqlite3_last_insert_rowid(db));
 }
 
-bool SqliteUserStore::updateUser(const DTO::UserRow& user) {
-    sqlite3* db = db_->handle();
-    const char* sql =
-        "UPDATE users SET username = ?, password_hash = ?, email = ?, age = ?, is_artist = ? "
-        "WHERE id = ?;";
-    sqlite3_stmt* st = nullptr;
-    if (sqlite3_prepare_v2(db, sql, -1, &st, nullptr) != SQLITE_OK) {
-        throw std::runtime_error("sqlite3_prepare_v2 (update user)");
-    }
-    bindString(st, 1, user.username);
-    bindString(st, 2, user.password_hash);
-    bindString(st, 3, user.email);
-    sqlite3_bind_int(st, 4, user.age);
-    sqlite3_bind_int(st, 5, user.is_artist ? 1 : 0);
-    sqlite3_bind_int(st, 6, user.id);
-    const int step_rc = sqlite3_step(st);
-    sqlite3_finalize(st);
-    if (step_rc != SQLITE_DONE) {
-        return false;
-    }
-    return sqlite3_changes(db) > 0;
-}
-
 bool SqliteUserStore::deleteUser(int id) {
     sqlite3* db = db_->handle();
     const char* sql = "DELETE FROM users WHERE id = ?;";

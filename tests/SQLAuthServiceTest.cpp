@@ -9,7 +9,7 @@
 
 static std::shared_ptr<dto::SqliteDatabase> makeInMemoryDb() {
     auto db = std::make_shared<dto::SqliteDatabase>();
-    db->open(":memory:", "../db/schema.sql");
+    db->open(":memory:", LVIV_MUSIC_TEST_SCHEMA_SQL_PATH);
     return db;
 }
 
