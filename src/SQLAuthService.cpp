@@ -5,7 +5,7 @@
 #include "../include/dto/StoredTypes.h"
 #include "../include/interface/IUserStore.h"
 
-SQLAuthService::SQLAuthService(std::shared_ptr<IUserStore> userStore) : userStore_(std::move(userStore)) {}
+SQLAuthService::SQLAuthService(IUserStore& userStore) : userStore_(userStore) {}
 
 bool SQLAuthService::isValidCredential(const std::string& s) {
     if (s.empty()) {
@@ -24,7 +24,7 @@ bool SQLAuthService::registerUser(const std::string& username, const std::string
         return false;
     }
 
-    if (userStore_->getUserByUsername(username) != nullptr) {
+    if (userStore_.getUserByUsername(username) != nullptr) {
         return false;
     }
 
@@ -35,12 +35,12 @@ bool SQLAuthService::registerUser(const std::string& username, const std::string
     row.age = 0;
     row.is_artist = false;
 
-    const int newId = userStore_->insertUser(row);
+    const int newId = userStore_.insertUser(row);
     return newId > 0;
 }
 
 bool SQLAuthService::login(const std::string& username, const std::string& password) {
-    auto user = userStore_->getUserByUsername(username);
+    auto user = userStore_.getUserByUsername(username);
     if (user == nullptr || user->password_hash != password) {
         isAuthenticated_ = false;
         current_.clear();

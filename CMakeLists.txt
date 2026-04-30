@@ -58,6 +58,8 @@ add_executable(lviv_music_tests
   src/LocalAuthService.cpp
   src/SQLAuthService.cpp
   src/LocalSongRepository.cpp
+  src/dto/SqliteDatabase.cpp
+  src/dto/SqliteUserStore.cpp
   src/Song.cpp
 )
 target_include_directories(lviv_music_tests PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include")

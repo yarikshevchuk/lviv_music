@@ -15,7 +15,7 @@ static std::shared_ptr<dto::SqliteDatabase> makeInMemoryDb() {
 
 TEST(SQLAuthService, RegisterAndLogin) {
     auto db = makeInMemoryDb();
-    auto userStore = std::make_shared<SqliteUserStore>(db);
+    SqliteUserStore userStore(db);
     SQLAuthService auth(userStore);
 
     const std::string u = "user_sql";
@@ -31,7 +31,7 @@ TEST(SQLAuthService, RegisterAndLogin) {
 
 TEST(SQLAuthService, LoginFailure) {
     auto db = makeInMemoryDb();
-    auto userStore = std::make_shared<SqliteUserStore>(db);
+    SqliteUserStore userStore(db);
     SQLAuthService auth(userStore);
 
     EXPECT_FALSE(auth.login("missing", "x"));
@@ -40,7 +40,7 @@ TEST(SQLAuthService, LoginFailure) {
 
 TEST(SQLAuthService, RejectsInvalidCredentials) {
     auto db = makeInMemoryDb();
-    auto userStore = std::make_shared<SqliteUserStore>(db);
+    SqliteUserStore userStore(db);
     SQLAuthService auth(userStore);
 
     EXPECT_FALSE(auth.registerUser("", "x"));
