@@ -1,14 +1,15 @@
-#include "../include/GenreRecommendationService.h"
+#include <map>
+
+#include "../include/GenreRecommendationStrategy.h"
 #include "../include/Song.h"
 #include "../include/User.h"
-#include <map>
 
 using namespace std;
 
-std::vector<std::shared_ptr<Song>> GenreRecommendationService::generateRecommendations(std::shared_ptr<ISongRepository> songs, std::shared_ptr<User> user) const {
+std::vector<std::shared_ptr<Song>> GenreRecommendationStrategy::generateRecommendations(std::shared_ptr<ISongRepository> songs, std::shared_ptr<User> user) const {
     std::vector<std::shared_ptr<Song>> recs;
-    
-    if(user == nullptr || !user->getAuthStatus() || user->likes() == nullptr || user->likes()->getLikedSongs().empty()) {
+
+    if (user == nullptr || !user->getAuthStatus() || user->likes() == nullptr || user->likes()->getLikedSongs().empty()) {
         return recs;
     }
 
@@ -16,8 +17,7 @@ std::vector<std::shared_ptr<Song>> GenreRecommendationService::generateRecommend
     string primaryGenre = "none";
     std::vector<std::shared_ptr<Song>> likedSongs = user->likes()->getLikedSongs();
 
-
-    for (const auto &song : likedSongs) {
+    for (const auto& song : likedSongs) {
         for (string genre : song->getGenres()) {
             if (genres.find(genre) == genres.end()) {
                 genres.insert({genre, 1});
@@ -35,15 +35,15 @@ std::vector<std::shared_ptr<Song>> GenreRecommendationService::generateRecommend
         }
     }
 
-    if(primaryGenre == "none") {
+    if (primaryGenre == "none") {
         return recs;
     }
 
-    for (auto const &song : songs->getSongs()) {
+    for (auto const& song : songs->getSongs()) {
         if (song->hasGenre(primaryGenre)) {
             recs.push_back(song);
         }
-    } 
+    }
 
     return recs;
 }

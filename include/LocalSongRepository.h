@@ -1,23 +1,31 @@
 #pragma once
+#include "boost/di.hpp"
 #include "interface/ISongRepository.h"
 
 class Song;
 
 class LocalSongRepository : public ISongRepository {
-    private:
+   private:
     std::vector<std::shared_ptr<Song>> songs_;
     std::vector<std::shared_ptr<Song>> trends_;
-    
 
-    public:
+    LocalSongRepository() {}
+
+   public:
     ~LocalSongRepository() = default;
+    LocalSongRepository(const LocalSongRepository&) = delete;
+    LocalSongRepository& operator=(const LocalSongRepository&) = delete;
 
-     void addSong(std::shared_ptr<Song> sng) override;
-     void addTrendingSong(std::shared_ptr<Song> sng) override;
+    static LocalSongRepository* getInstance();
 
-     std::vector<std::shared_ptr<Song>> getTrendingSongs() override;
-     std::vector<std::shared_ptr<Song>> getSongs() override;
+    void clear();
 
-     std::shared_ptr<Song> findSong(const std::string& songName) override;
-     std::shared_ptr<Song> findSong(int songId) override;
+    void addSong(std::shared_ptr<Song> sng) override;
+    void addTrendingSong(std::shared_ptr<Song> sng) override;
+
+    std::vector<std::shared_ptr<Song>> getTrendingSongs() override;
+    std::vector<std::shared_ptr<Song>> getSongs() override;
+
+    std::shared_ptr<Song> findSong(const std::string& songName) override;
+    std::shared_ptr<Song> findSong(int songId) override;
 };

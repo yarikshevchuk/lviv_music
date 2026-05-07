@@ -1,9 +1,21 @@
 #include "../include/LocalSongRepository.h"
-#include "../include/Song.h"
-#include <vector>
+
 #include <memory>
+#include <vector>
+
+#include "../include/Song.h"
 
 using namespace std;
+
+LocalSongRepository* LocalSongRepository::getInstance() {
+    static LocalSongRepository instance;
+    return &instance;
+}
+
+void LocalSongRepository::clear() {
+    songs_.clear();
+    trends_.clear();
+}
 
 void LocalSongRepository::addSong(std::shared_ptr<Song> sng) {
     if (!sng) return;
@@ -26,11 +38,8 @@ void LocalSongRepository::addTrendingSong(shared_ptr<Song> sng) {
     addSong(sng);
 }
 
-
-std::vector<std::shared_ptr<Song>> LocalSongRepository::getTrendingSongs() {return trends_;};
-std::vector<std::shared_ptr<Song>> LocalSongRepository::getSongs() {return songs_;};
-
-
+std::vector<std::shared_ptr<Song>> LocalSongRepository::getTrendingSongs() { return trends_; };
+std::vector<std::shared_ptr<Song>> LocalSongRepository::getSongs() { return songs_; };
 
 shared_ptr<Song> LocalSongRepository::findSong(const string& songName) {
     for (const auto& s : songs_) {

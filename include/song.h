@@ -16,21 +16,8 @@ class Song : public IAudio {
 
     int songId;
     int rating;
-    int listenCount;
+    int listenCount{0};
     static int Count;
-
-    class Lyrics {
-       private:
-        std::string lyrics;
-        std::string source;
-
-       public:
-        std::string getLyrics() const;
-        std::string getSource() const;
-        void setLyrics(std::string lyrics);
-        void setSource(std::string source);
-    };
-    Lyrics L;
 
    public:
     Song(std::string name, std::string author, std::set<std::string> genres, int duration = 180);
@@ -44,8 +31,6 @@ class Song : public IAudio {
     std::string getName() const override;
     std::string getAuthor() const override;
     int getDuration() const;
-
-    void addLyrics(std::string lyrics, std::string source);
 
     int getRating() const;
 

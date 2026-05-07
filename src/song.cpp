@@ -24,15 +24,4 @@ void Song::addListen() { ++listenCount; }
 
 int Song::getListenCount() const { return listenCount; }
 
-void Song::addLyrics(string lrcs, string src) {
-    L.setLyrics(lrcs);
-    L.setSource(src);
-}
-
-string Song::Lyrics::getLyrics() const { return lyrics; };
-string Song::Lyrics::getSource() const { return source; };
-
-void Song::Lyrics::setLyrics(string lrcs) { lyrics = lrcs; };
-void Song::Lyrics::setSource(string src) { source = src; };
-
 int Song::Count = 0;

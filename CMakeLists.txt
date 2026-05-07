@@ -30,7 +30,6 @@ target_include_directories(sqlite3 PUBLIC "${sqlite3_source_SOURCE_DIR}")
 add_executable(lviv_music
     src/Main.cpp
     src/App.cpp
-    src/Feed.cpp
     src/Song.cpp
     src/Playlist.cpp
     src/User.cpp
@@ -42,8 +41,11 @@ add_executable(lviv_music
     src/ArtistPublisher.cpp
     src/LocalAuthService.cpp
     src/SQLAuthService.cpp
+    src/LoggerLikesSongs.cpp
     src/LocalSongRepository.cpp
-    src/GenreRecommendationService.cpp
+    src/GenreRecommendationStrategy.cpp
+    src/ArtistRecommendationStrategy.cpp
+    src/RecommendationManager.cpp
     src/dto/SqliteDatabase.cpp
     src/dto/SqliteUserStore.cpp
 )

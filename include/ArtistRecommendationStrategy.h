@@ -1,8 +1,8 @@
 #pragma once
 
-#include "interface/IRecommendationService.h"
+#include "interface/IRecommendationStrategy.h"
 
-class GenreRecommendationService : public IRecommendationService{
-public:
+class ArtistRecommendationStrategy : public IRecommendationStrategy {
+   public:
     std::vector<std::shared_ptr<Song>> generateRecommendations(std::shared_ptr<ISongRepository> songs, std::shared_ptr<User> user) const override;
 };

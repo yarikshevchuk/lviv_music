@@ -10,12 +10,15 @@
 #include "../include/ListenerHasPlaylists.h"
 #include "../include/ListenerHasRecs.h"
 #include "../include/ListenerIdentity.h"
+#include "../include/LoggerLikesSongs.h"
 #include "../include/ListenerLikesSongs.h"
 #include "../include/Song.h"
 #include "../include/User.h"
+#include "../include/ArtistRecommendationStrategy.h"
+#include "../include/GenreRecommendationStrategy.h"
 #include "../include/interface/IAuthService.h"
 
-App::App(std::shared_ptr<IAuthService> auth, std::shared_ptr<ISongRepository> songs, std::shared_ptr<IRecommendationService> recs) : auth_(std::move(auth)), songs_(std::move(songs)), recs_(std::move(recs)) {}
+App::App(std::shared_ptr<IAuthService> auth, std::shared_ptr<ISongRepository> songs, std::shared_ptr<IRecommendationManager> recs) : auth_(std::move(auth)), songs_(std::move(songs)), recs_(std::move(recs)) {}
 
 int App::run() {
     if (songs_ == nullptr) {
@@ -27,6 +30,8 @@ int App::run() {
     songs_->addSong(std::make_shared<Song>("Cheri Cheri Lady", "Modern Talking", std::set<std::string>{"Eurodisco"}));
     songs_->addSong(std::make_shared<Song>("Self Control", "Laura Branigan", std::set<std::string>{"Eurodisco"}));
     songs_->addSong(std::make_shared<Song>("The Diary of Jane", "Breaking Benjamin", std::set<std::string>{"Rock", "Nu-Metal"}));
+    songs_->addSong(std::make_shared<Song>("So Cold", "Breaking Benjamin", std::set<std::string>{"Nu-Metal"}));
+    songs_->addSong(std::make_shared<Song>("I Will Not Bow", "Breaking Benjamin", std::set<std::string>{"Nu-Metal"}));
     songs_->addTrendingSong(std::make_shared<Song>("Can You Feel My Heart", "BMTH", std::set<std::string>{"Rock", "Nu-Metal"}));
     songs_->addTrendingSong(std::make_shared<Song>("Before I Forget", "Slipknot", std::set<std::string>{"Nu-Metal"}));
 
@@ -122,6 +127,34 @@ int App::run() {
         showSong(list, static_cast<size_t>(choice - 1));
     };
 
+    auto openSettings = [&]() {
+        if (recs_ == nullptr) {
+            std::cout << "Settings are not configured.\n";
+            return;
+        }
+
+        while (true) {
+            std::cout << "\n=== Settings ===\n";
+            std::cout << "Recommendation strategy:\n";
+            std::cout << "[1] Genre (default)\n";
+            std::cout << "[2] Artist\n";
+            std::cout << "[0] Back\n";
+            std::cout << "Choose: ";
+
+            const int choice = readInt(0, 2);
+            if (choice == 0) {
+                return;
+            }
+            if (choice == 1) {
+                recs_->setStrategy(std::make_shared<GenreRecommendationStrategy>());
+                std::cout << "Switched to Genre strategy.\n";
+            } else if (choice == 2) {
+                recs_->setStrategy(std::make_shared<ArtistRecommendationStrategy>());
+                std::cout << "Switched to Artist strategy.\n";
+            }
+        }
+    };
+
     // === AUTH menu ===
     if (auth_ == nullptr) {
         std::cout << "Auth service is not configured.\n";
@@ -149,7 +182,7 @@ int App::run() {
                 std::cout << "Login failed.\n";
             } else {
                 currentUser_ = std::make_shared<User>();
-                currentUser_->grantListenerAccess(std::make_unique<ListenerLikesSongs>(), std::make_unique<ListenerHasPlaylists>(), std::make_unique<ListenerHasRecs>(), std::make_unique<ListenerIdentity>(auth_->getUsername(), "", 0, 0));
+                currentUser_->grantListenerAccess(std::make_unique<LoggerLikesSongs>(std::make_unique<ListenerLikesSongs>()), std::make_unique<ListenerHasPlaylists>(), std::make_unique<ListenerHasRecs>(), std::make_unique<ListenerIdentity>(auth_->getUsername(), "", 0, 0));
             }
         } else if (choice == 2) {
             if (!auth_->registerUser(username, password)) {
@@ -167,10 +200,11 @@ int App::run() {
         std::cout << "[2] All songs\n";
         std::cout << "[3] Liked songs\n";
         std::cout << "[4] Recommendations\n";
+        std::cout << "[5] Settings\n";
         std::cout << "[0] Logout & Exit\n";
         std::cout << "Choose: ";
 
-        const int choice = readInt(0, 4);
+        const int choice = readInt(0, 5);
         if (choice == 0) {
             auth_->logout();
             currentUser_.reset();
@@ -187,8 +221,10 @@ int App::run() {
                 std::cout << "Recommendations are not configured.\n";
                 continue;
             }
-            currentUser_->recs()->setRecs(recs_->generateRecommendations(songs_, currentUser_));
+            currentUser_->recs()->setRecs(recs_->getRecommendations(songs_, currentUser_));
             showSongList("Recommendations", currentUser_->recs()->getRecs());
+        } else if (choice == 5) {
+            openSettings();
         }
     }
 }
