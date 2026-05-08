@@ -21,19 +21,14 @@
 App::App(std::shared_ptr<IAuthService> auth, std::shared_ptr<ISongRepository> songs, std::shared_ptr<IRecommendationManager> recs) : auth_(std::move(auth)), songs_(std::move(songs)), recs_(std::move(recs)) {}
 
 int App::run() {
-    if (songs_ == nullptr) {
-        std::cout << "Song repository is not configured.\n";
-        return 1;
-    }
-
     songs_->addSong(std::make_shared<Song>("You're my heart, you're my soul", "Modern Talking", std::set<std::string>{"Eurodisco"}));
     songs_->addSong(std::make_shared<Song>("Cheri Cheri Lady", "Modern Talking", std::set<std::string>{"Eurodisco"}));
     songs_->addSong(std::make_shared<Song>("Self Control", "Laura Branigan", std::set<std::string>{"Eurodisco"}));
     songs_->addSong(std::make_shared<Song>("The Diary of Jane", "Breaking Benjamin", std::set<std::string>{"Rock", "Nu-Metal"}));
     songs_->addSong(std::make_shared<Song>("So Cold", "Breaking Benjamin", std::set<std::string>{"Nu-Metal"}));
     songs_->addSong(std::make_shared<Song>("I Will Not Bow", "Breaking Benjamin", std::set<std::string>{"Nu-Metal"}));
-    songs_->addTrendingSong(std::make_shared<Song>("Can You Feel My Heart", "BMTH", std::set<std::string>{"Rock", "Nu-Metal"}));
-    songs_->addTrendingSong(std::make_shared<Song>("Before I Forget", "Slipknot", std::set<std::string>{"Nu-Metal"}));
+    songs_->addSong(std::make_shared<Song>("Can You Feel My Heart", "BMTH", std::set<std::string>{"Rock", "Nu-Metal"}));
+    songs_->addSong(std::make_shared<Song>("Before I Forget", "Slipknot", std::set<std::string>{"Nu-Metal"}));
 
     auto readLine = []() -> std::string {
         std::string s;
@@ -156,10 +151,6 @@ int App::run() {
     };
 
     // === AUTH menu ===
-    if (auth_ == nullptr) {
-        std::cout << "Auth service is not configured.\n";
-        return 1;
-    }
 
     while (!auth_->isAuthenticated()) {
         std::cout << "\n=== Auth ===\n";
@@ -196,34 +187,27 @@ int App::run() {
     // === HOME menu ===
     while (true) {
         std::cout << "\n=== Home (" << auth_->getUsername() << ") ===\n";
-        std::cout << "[1] Trends\n";
-        std::cout << "[2] All songs\n";
-        std::cout << "[3] Liked songs\n";
-        std::cout << "[4] Recommendations\n";
-        std::cout << "[5] Settings\n";
+        std::cout << "[1] All songs\n";
+        std::cout << "[2] Liked songs\n";
+        std::cout << "[3] Recommendations\n";
+        std::cout << "[4] Settings\n";
         std::cout << "[0] Logout & Exit\n";
         std::cout << "Choose: ";
 
-        const int choice = readInt(0, 5);
+        const int choice = readInt(0, 4);
         if (choice == 0) {
             auth_->logout();
             currentUser_.reset();
             return 0;
         }
         if (choice == 1) {
-            showSongList("Trends", songs_->getTrendingSongs());
-        } else if (choice == 2) {
             showSongList("All songs", songs_->getSongs());
-        } else if (choice == 3) {
+        } else if (choice == 2) {
             showSongList("Liked songs", getLikedSongs());
-        } else if (choice == 4) {
-            if (recs_ == nullptr || currentUser_ == nullptr || currentUser_->recs() == nullptr) {
-                std::cout << "Recommendations are not configured.\n";
-                continue;
-            }
+        } else if (choice == 3) {
             currentUser_->recs()->setRecs(recs_->getRecommendations(songs_, currentUser_));
             showSongList("Recommendations", currentUser_->recs()->getRecs());
-        } else if (choice == 5) {
+        } else if (choice == 4) {
             openSettings();
         }
     }

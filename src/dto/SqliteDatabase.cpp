@@ -35,8 +35,6 @@ void SqliteDatabase::open(const std::string& file_path, const std::string& schem
     throwOnError(rc, raw, "sqlite3_open_v2");
     db_.reset(raw);
 
-    // rc = sqlite3_exec(db_.get(), "PRAGMA foreign_keys = ON;", nullptr, nullptr, nullptr);
-    // throwOnError(rc, db_.get(), "PRAGMA foreign_keys");
     if (!schema_file_path.empty()) {
         readSchema(schema_file_path);
     }

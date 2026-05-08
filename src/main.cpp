@@ -16,7 +16,6 @@
 int main() {
     auto db = std::make_shared<dto::SqliteDatabase>();
     db->open("lviv_music.db");
-
     auto userStore = std::make_shared<SqliteUserStore>(db);
 
     namespace di = boost::di;

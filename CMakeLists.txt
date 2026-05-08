@@ -37,7 +37,6 @@ add_executable(lviv_music
     src/ListenerLikesSongs.cpp
     src/ListenerHasPlaylists.cpp
     src/ListenerHasRecs.cpp
-    src/ListenerHasTrends.cpp
     src/ArtistPublisher.cpp
     src/LocalAuthService.cpp
     src/SQLAuthService.cpp

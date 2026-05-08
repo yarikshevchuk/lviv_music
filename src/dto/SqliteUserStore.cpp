@@ -24,7 +24,7 @@ int SqliteUserStore::insertUser(const DTO::UserRow& user) {
     const char* sql = "INSERT INTO users (username, password_hash, email, age, is_artist) "
                       "VALUES (?, ?, ?, ?, ?);";
     sqlite3_stmt* st = nullptr;
-    if (sqlite3_prepare_v2(db, sql, -1, &st, nullptr) != SQLITE_OK) {
+    if (sqlite3_prepare_v2(db, sql, -1, &st, nullptr) != SQLITE_OK) {   
         throw std::runtime_error("sqlite3_prepare_v2 (insert user)");
     }
     bindString(st, 1, user.username);

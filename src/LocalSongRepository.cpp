@@ -14,7 +14,6 @@ LocalSongRepository* LocalSongRepository::getInstance() {
 
 void LocalSongRepository::clear() {
     songs_.clear();
-    trends_.clear();
 }
 
 void LocalSongRepository::addSong(std::shared_ptr<Song> sng) {
@@ -26,19 +25,6 @@ void LocalSongRepository::addSong(std::shared_ptr<Song> sng) {
     }
     songs_.push_back(sng);
 }
-
-void LocalSongRepository::addTrendingSong(shared_ptr<Song> sng) {
-    if (!sng) return;
-    for (auto ptr = trends_.begin(); ptr != trends_.end(); ptr++) {
-        if (((*ptr)->getName() == sng->getName()) && ((*ptr)->getAuthor() == sng->getAuthor())) {
-            return;
-        }
-    }
-    trends_.push_back(sng);
-    addSong(sng);
-}
-
-std::vector<std::shared_ptr<Song>> LocalSongRepository::getTrendingSongs() { return trends_; };
 std::vector<std::shared_ptr<Song>> LocalSongRepository::getSongs() { return songs_; };
 
 shared_ptr<Song> LocalSongRepository::findSong(const string& songName) {
